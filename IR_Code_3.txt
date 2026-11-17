@@ -1,0 +1,169 @@
+#import
+import numpy as np
+import pandas as pd
+from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.inference import VariableElimination
+from pgmpy.models import DiscreteBayesianNetwork
+from pgmpy.parameter_estimator import DiscreteMLE
+==============================================================
+# Read Heart Disease dataset
+heartDisease = pd.read_csv("/home/anurag/7thSemCodes/IR/IRDataset/Assign3/heart.csv")
+
+==============================================================
+# Replace missing-value markers
+heartDisease = heartDisease.replace("?", np.nan)
+
+==============================================================
+# Convert columns to numeric
+for col in heartDisease.columns:
+	heartDisease[col] = pd.to_numeric(
+		heartDisease[col], errors="coerce"
+	)	
+
+==============================================================
+# Display sample instances and data types
+print("Sample instances from the dataset:")
+print(heartDisease.head())
+
+==============================================================
+print("\nAttributes and datatypes:")
+print(heartDisease.dtypes)
+
+==============================================================
+# Remove missing values
+heartDisease = heartDisease.dropna().copy()
+
+==============================================================
+# Convert target into binary values:
+# 0 = No heart disease, 1 = Heart disease
+
+heartDisease["target"] = (
+	heartDisease["target"] > 0
+).astype(int)
+
+==============================================================
+# Discretize continuous attributes
+
+continuous_columns = [
+	"age", "trestbps", "chol", "thalach", "oldpeak"
+]
+
+for col in continuous_columns:
+	heartDisease[col] = pd.cut(
+		heartDisease[col],
+		bins=3,
+		labels=False,
+		duplicates="drop"
+)
+
+==============================================================
+# Remove remaining missing values
+
+heartDisease = heartDisease.dropna().astype(int)
+
+print("\nDataset after preprocessing:")
+print(heartDisease.head())
+print("\nDataset shape:", heartDisease.shape)
+
+==============================================================
+# Construct the Bayesian Network
+
+model = DiscreteBayesianNetwork([
+	("age", "target"),
+	("sex", "target"),
+	("exang", "target"),
+	("cp", "target"),
+	("target", "restecg"),
+	("target", "chol")
+])
+
+==============================================================
+# Learn Conditional Probability Distributions (CPDs)
+
+print("\nLearning CPDs using Maximum Likelihood Estimation...")
+
+model.fit(
+	heartDisease,
+	estimator=DiscreteMLE()
+)
+
+print("CPDs learned successfully.")
+
+==============================================================
+# Check model validity
+print("\nIs the model valid?", model.check_model())
+
+==============================================================
+# Perform inference using Variable Elimination
+
+print("\nPerforming inference:")
+HeartDiseasetest_infer = VariableElimination(model)
+print("\nPerforming inference:")
+HeartDiseasetest_infer = VariableElimination(model)
+
+# Probability of heart disease given resting ECG evidence
+q1 = HeartDiseasetest_infer.query(
+	variables=["target"],
+	evidence={"restecg": 1}
+)
+
+print("\n1. Probability of heart disease given restecg = 1:")
+print(q1)
+
+# Probability of heart disease given chest pain evidence
+q2 = HeartDiseasetest_infer.query(
+	variables=["target"],
+	evidence={"cp": 2}
+)
+
+print("\n2. Probability of heart disease given cp = 2:")
+print(q2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
