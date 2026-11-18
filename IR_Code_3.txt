@@ -1,3 +1,20 @@
+%pip install pgmpy
+=================================================
+
+"Step 2: Restart the Kernel
+In Jupyter Notebook:
+1. Click Kernel.
+2. Select Restart Kernel.
+3. Run your import cell again."
+
+"Delete this message after execution of it"
+
+================================================
+
+import pgmpy
+print(pgmpy.__version__)
+
+================================================
 #import
 import numpy as np
 import pandas as pd
@@ -7,7 +24,7 @@ from pgmpy.models import DiscreteBayesianNetwork
 from pgmpy.parameter_estimator import DiscreteMLE
 ==============================================================
 # Read Heart Disease dataset
-heartDisease = pd.read_csv("/home/anurag/7thSemCodes/IR/IRDataset/Assign3/heart.csv")
+heartDisease = pd.read_csv(r"C:/Users/Anurag/Desktop/heart.csv")
 
 ==============================================================
 # Replace missing-value markers
